@@ -42,7 +42,7 @@ Usage
 Development
 ===========
 
-Fell free to give feedback or improvment.
+Fell free to give feedback or improvements.
 
 Launch test::
 

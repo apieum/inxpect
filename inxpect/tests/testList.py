@@ -8,7 +8,7 @@ class ListMethodTest(TestCase):
     def setUp(self):
         get_attr = getters.AttrByName('attribute')
         class Expect(object):
-            attribute = expect.ListMethod(get_attr)
+            attribute = expect.List(get_attr)
         self.expect = Expect()
         class Tested(object):
             attribute = ['value1','value2','value3',['value4']]

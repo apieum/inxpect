@@ -1,14 +1,14 @@
 # -*- coding: utf8 -*-
 from . import TestCase, Mock
-from inxpect.expect.chain import AndChain, OrChain
+from inxpect.expect import And, Or
 
 
-class AndChainTest(TestCase):
+class AndTest(TestCase):
     def test_it_should_call_each_callback_it_contains_until_false(self):
         callback1 = Mock(return_value=True)
         callback2 = Mock(return_value=False)
         callback3 = Mock(return_value=True)
-        conditions = AndChain(callback1, callback2, callback3)
+        conditions = And(callback1, callback2, callback3)
         args = ('arg1', 'arg2')
         self.assertFalse(conditions(*args))
         callback1.assert_called_once_with(*args)
@@ -18,16 +18,16 @@ class AndChainTest(TestCase):
     def test_can_chain_conditions_with_bitwise_or(self):
         callback1 = Mock(return_value=True)
         callback2 = Mock(return_value=False)
-        cond1 = AndChain(callback1) | AndChain(callback2)
-        cond2 = AndChain(callback2) | AndChain(callback1)
+        cond1 = And(callback1) | And(callback2)
+        cond2 = And(callback2) | And(callback1)
         self.assertTrue(cond1())
         self.assertTrue(cond2())
 
     def test_can_chain_conditions_with_bitwise_and(self):
         callback1 = Mock(return_value=True)
         callback2 = Mock(return_value=False)
-        cond1 = AndChain(callback1) & AndChain(callback2)
-        cond2 = AndChain(callback2) & AndChain(callback1)
+        cond1 = And(callback1) & And(callback2)
+        cond2 = And(callback2) & And(callback1)
         self.assertFalse(cond1())
         self.assertFalse(cond2())
 
@@ -35,7 +35,7 @@ class AndChainTest(TestCase):
         expected = 'it fails'
         def fail(chain, at, *args, **kwargs):
             raise AssertionError('it fails')
-        cond = AndChain(Mock(return_value=False))
+        cond = And(Mock(return_value=False))
         cond.on_fail(fail)
         with self.assertRaisesRegex(AssertionError, expected):
             cond()
@@ -45,7 +45,7 @@ class AndChainTest(TestCase):
         logs = []
         def log(chain, *args, **kwargs):
             logs.append(message %(args, kwargs))
-        cond = AndChain(Mock(return_value=True))
+        cond = And(Mock(return_value=True))
         cond.on_success(log)
         expected_logs = [
             message %(tuple(), {}),
@@ -58,25 +58,25 @@ class AndChainTest(TestCase):
     def test_it_returns_OrCondition_when_chaining_with_bitwise_or(self):
         callback1 = Mock(return_value=True)
         callback2 = Mock(return_value=False)
-        condition = AndChain(callback1) | AndChain(callback2)
-        self.assertIsInstance(condition, OrChain)
+        condition = And(callback1) | And(callback2)
+        self.assertIsInstance(condition, Or)
 
     def test_it_just_extend_when_chaining_with_bitwise_and(self):
         callback1 = Mock(return_value=True)
         callback2 = Mock(return_value=False)
-        condition1 = AndChain(callback1)
-        condition2 = condition1 & AndChain(callback2)
+        condition1 = And(callback1)
+        condition2 = condition1 & And(callback2)
         self.assertIs(condition1, condition2)
         self.assertIn(callback2, condition2)
 
 
 
-class OrChainTest(TestCase):
+class OrTest(TestCase):
     def test_it_returns_true_at_first_callback_that_returns_true(self):
         callback1 = Mock(return_value=False)
         callback2 = Mock(return_value=True)
         callback3 = Mock(return_value=True)
-        conditions = OrChain(callback1, callback2, callback3)
+        conditions = Or(callback1, callback2, callback3)
         args = ('arg1', 'arg2')
         self.assertTrue(conditions(*args))
         callback1.assert_called_once_with(*args)
@@ -86,22 +86,22 @@ class OrChainTest(TestCase):
     def test_it_returns_AndCondition_when_chaining_with_bitwise_and(self):
         callback1 = Mock(return_value=True)
         callback2 = Mock(return_value=False)
-        condition = OrChain(callback1) & OrChain(callback2)
-        self.assertIsInstance(condition, AndChain)
+        condition = Or(callback1) & Or(callback2)
+        self.assertIsInstance(condition, And)
 
     def test_it_just_extend_when_chaining_with_bitwise_or(self):
         callback1 = Mock(return_value=False)
         callback2 = Mock(return_value=True)
-        condition1 = OrChain(callback1)
-        condition2 = condition1 | OrChain(callback2)
+        condition1 = Or(callback1)
+        condition2 = condition1 | Or(callback2)
         self.assertIs(condition1, condition2)
         self.assertIn(callback2, condition2)
 
     def test_it_is_searchable(self):
         from inxpect.expect.operator import Equal
         from inxpect.expect.getters import AsIs
-        list1 = [OrChain(Equal(True, AsIs(True)))]
-        self.assertIn(OrChain(Equal(True, AsIs(True))), list1)
+        list1 = [Or(Equal(True, AsIs(True)))]
+        self.assertIn(Or(Equal(True, AsIs(True))), list1)
 
 
 

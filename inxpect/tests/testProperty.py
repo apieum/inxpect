@@ -1,13 +1,13 @@
 # -*- coding: utf8 -*-
 from . import TestCase, Mock
-from inxpect import expect
+from inxpect.expect.property import DefaultProperty
 from inxpect import getters
 
 
 class DefaultPropertyTest(TestCase):
     def setUp(self):
         class Expect(object):
-            attribute = expect.DefaultProperty(getters.AttrByName('attribute'))
+            attribute = DefaultProperty(getters.AttrByName('attribute'))
 
         class Tested(object):
             attribute = 'value'
@@ -68,14 +68,14 @@ class DefaultPropertyTest(TestCase):
 
     def test_instance_of_returns_a_function_to_test_isinstance(self):
         self.object.attribute = Mock()
-        test_true = self.expect.attribute.instance_of((Mock, expect.DefaultProperty))
+        test_true = self.expect.attribute.instance_of((Mock, DefaultProperty))
         test_false = self.expect.attribute.instance_of(int)
         self.assertTrue(test_true(self.object))
         self.assertFalse(test_false(self.object))
 
     def test_not_instance_of_returns_a_function_to_test_is_not_instance(self):
         self.object.attribute = Mock()
-        test_true = self.expect.attribute.not_instance_of((Mock, expect.DefaultProperty))
+        test_true = self.expect.attribute.not_instance_of((Mock, DefaultProperty))
         test_false = self.expect.attribute.not_instance_of(int)
         self.assertFalse(test_true(self.object))
         self.assertTrue(test_false(self.object))

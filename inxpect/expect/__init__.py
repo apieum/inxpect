@@ -1,16 +1,15 @@
 # -*- coding: utf8 -*-
 __all__ = [
     'getters', 'operator',
-    'AndChain','OrChain', 'DefaultProperty',
-    'DefaultMethod', 'SameMethod',
-    'ListMethod', 'ListItemMethod',
-    'DictMethod', 'DictItemMethod'
+    'And','Or',
+    'Expect', 'ExpectSame',
+    'List', 'ListItem',
+    'Dict', 'DictItem'
 ]
 
-from .property import DefaultProperty
-from .method import DefaultMethod, SameMethod
-from .list import ListMethod, ListItemMethod
-from .dict import DictMethod, DictItemMethod
+from .method import DefaultMethod as Expect, SameMethod as ExpectSame
+from .list import ListMethod as List, ListItemMethod as ListItem
+from .dict import DictMethod as Dict, DictItemMethod as DictItem
 from . import getters
 from . import operator
-from .chain import AndChain, OrChain
+from .chain import AndChain as And, OrChain as Or

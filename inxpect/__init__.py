@@ -2,10 +2,10 @@
 __all__ = [
     'expect_factory',
     'getters', 'operator'
-    'AndChain', 'OrChain', 'DefaultProperty',
-    'DefaultMethod', 'SameMethod',
-    'ListMethod', 'ListItemMethod',
-    'DictMethod', 'DictItemMethod'
+    'And', 'Or',
+    'Expect', 'ExpectSame',
+    'List', 'ListItem',
+    'Dict', 'DictItem'
 ]
 
 from .expect import *

@@ -40,9 +40,9 @@ class InspectTest(TestCase):
         public_members = self.filter_public_members(expected)
         self.assertEqual(['attr1', 'attr2', 'attr3', 'attr4'], public_members)
 
-    def test_built_object_properties_are_ListMethod_when_object_ones_are_list(self):
+    def test_built_object_properties_are_List_when_object_ones_are_list(self):
         expected = expect_factory(Inspected)
-        self.assertIsInstance(expected.attr1, expect.ListMethod)
+        self.assertIsInstance(expected.attr1, expect.List)
 
     def test_built_object_properties_getter_is_AttrByName(self):
         expected = expect_factory(Inspected)
@@ -50,30 +50,30 @@ class InspectTest(TestCase):
         assertion = expected.attr1.equal_to(['val1', 'val2'])
         self.assertTrue(assertion(test))
 
-    def test_built_object_properties_are_DictMethod_when_object_ones_are_dict(self):
+    def test_built_object_properties_are_Dict_when_object_ones_are_dict(self):
         expected = expect_factory(Inspected)
-        self.assertIsInstance(expected.attr2, expect.DictMethod)
+        self.assertIsInstance(expected.attr2, expect.Dict)
 
     def test_built_object_properties_are_expect_factory_object_when_object_ones_are_objects(self):
         expected = expect_factory(Inspected, 1)
-        self.assertIsInstance(expected.attr4.kwargs, expect.DictMethod)
+        self.assertIsInstance(expected.attr4.kwargs, expect.Dict)
 
     def test_built_object_properties_are_DefaultMethod_for_builtin(self):
         expected = expect_factory(Inspected)
-        self.assertIsInstance(expected.attr3, expect.DefaultMethod)
+        self.assertIsInstance(expected.attr3, expect.Expect)
 
     def test_for_list_and_dict_add_ItemMethod(self):
         expected = expect_factory(Inspected)
-        self.assertIsInstance(expected.attr1Item, expect.ListItemMethod)
-        self.assertIsInstance(expected.attr2Item, expect.DictItemMethod)
+        self.assertIsInstance(expected.attr1Item, expect.ListItem)
+        self.assertIsInstance(expected.attr2Item, expect.DictItem)
 
     def test_for_list_and_dict_ItemMethod_name_is_singular_of_property_if_end_by_s(self):
         expected = expect_factory(Inspected, 1)
-        self.assertIsInstance(expected.attr4.kwarg, expect.DictItemMethod)
+        self.assertIsInstance(expected.attr4.kwarg, expect.DictItem)
 
     def test_tuple_are_treaten_as_list(self):
         expected = expect_factory(Inspected, 1)
-        self.assertIsInstance(expected.attr4.args1, expect.ListMethod)
+        self.assertIsInstance(expected.attr4.args1, expect.List)
 
 
 class IsDefaultMethodTest(TestCase):

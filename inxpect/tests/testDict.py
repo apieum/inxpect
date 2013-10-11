@@ -4,11 +4,11 @@ from inxpect import expect
 from inxpect import getters
 
 
-class DictMethodTest(TestCase):
+class DictTest(TestCase):
     def setUp(self):
         get_attr = getters.AttrByName('attribute')
         class Expect(object):
-            attribute = expect.DictMethod(get_attr)
+            attribute = expect.Dict(get_attr)
         self.expect = Expect()
         class Tested(object):
             attribute = {'key1':['value1'], 'key2':'value2', 'key3':'value3'}

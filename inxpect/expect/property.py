@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
-from .chain import Chain
+from .chain import AndChain
 from .getters import AsIs, ObjectLen
 from . import operator
 
 
 class DefaultProperty(object):
-    returns = Chain
+    returns = AndChain
     def __init__(self, _getter_=None):
         if not callable(_getter_):
             _getter_ = AsIs(_getter_)

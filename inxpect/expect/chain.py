@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
-__all__ = ['Chain']
+from . import pickle23
+
+__all__ = ['OrChain', 'AndChain']
 
 class Chain(list):
     fail = lambda self, at, *args, **kwargs: False
@@ -7,12 +9,6 @@ class Chain(list):
 
     def __init__(self, *args):
         list.__init__(self, args)
-
-    def __call__(self, *args, **kwargs):
-        for condition in self:
-            if condition(*args, **kwargs) is False:
-                return self.fail(condition, *args, **kwargs)
-        return self.success(*args, **kwargs)
 
     def on_fail(self, callback):
         if not callable(callback):
@@ -24,9 +20,42 @@ class Chain(list):
             callback = lambda self: callback
         self.success = type(self.on_success)(callback, self)
 
+    def __eq__(self, other):
+        return repr(self) == repr(other)
+
+    def __repr__(self):
+        return pickle23.dumps(self)
+
+class OrChain(Chain):
+    def __call__(self, *args, **kwargs):
+        for condition in self:
+            if condition(*args, **kwargs) is True:
+                return self.success(*args, **kwargs)
+        return self.fail(condition, *args, **kwargs)
+
     def __or__(self, condition):
-        or_condition = lambda *args, **kwargs: self(*args, **kwargs) or condition(*args, **kwargs)
-        return type(self)(or_condition)
+        if isinstance(condition, list):
+            self.extend(condition)
+        else:
+            self.append(condition)
+        return self
+
+    def __and__(self, condition):
+        return AndChain(self, condition)
+
+    __ror__ = __or__
+    __rand__ = __and__
+
+
+class AndChain(Chain):
+    def __call__(self, *args, **kwargs):
+        for condition in self:
+            if condition(*args, **kwargs) is False:
+                return self.fail(condition, *args, **kwargs)
+        return self.success(*args, **kwargs)
+
+    def __or__(self, condition):
+        return OrChain(self, condition)
 
     def __and__(self, condition):
         if isinstance(condition, list):
@@ -37,4 +66,6 @@ class Chain(list):
 
     __ror__ = __or__
     __rand__ = __and__
+
+
 

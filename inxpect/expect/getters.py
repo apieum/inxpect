@@ -9,6 +9,13 @@ class _getter_(object):
     def __repr__(self):
         return pickle23.dumps(self)
 
+class AnonymousFunc(_getter_):
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+
 class AsIs(_getter_):
     def __init__(self, value):
         self.value = value

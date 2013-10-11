@@ -1,13 +1,22 @@
-# -*- coding: utf8 -*-
+#-*- coding: utf8 -*-
+from . import pickle23
 
-class AsIs(object):
+
+class _getter_(object):
+    def __eq__(self, other):
+        return repr(self) == repr(other)
+
+    def __repr__(self):
+        return pickle23.dumps(self)
+
+class AsIs(_getter_):
     def __init__(self, value):
         self.value = value
 
     def __call__(self, *args, **kwargs):
         return self.value
 
-class AtIndex(object):
+class AtIndex(_getter_):
     def __init__(self, index, getter):
         self.index = index
         self.getter = getter
@@ -15,14 +24,15 @@ class AtIndex(object):
     def __call__(self, *args, **kwargs):
         return self.getter(*args, **kwargs)[self.index]
 
-class ObjectLen(object):
+
+class ObjectLen(_getter_):
     def __init__(self, getter):
         self.getter = getter
 
     def __call__(self, *args, **kwargs):
         return len(self.getter(*args, **kwargs))
 
-class AttrByName(object):
+class AttrByName(_getter_):
     def __init__(self, attr_name):
         self.attr_name = attr_name
 
@@ -33,7 +43,7 @@ class AttrTypeByName(AttrByName):
     def __call__(self, instance, default=None):
         return type(AttrByName.__call__(instance, default))
 
-class Arguments(object):
+class Arguments(_getter_):
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs

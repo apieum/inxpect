@@ -37,3 +37,30 @@ class DefaultMethodFactory(object):
 
         return getattr(expect, name)
 
+    def __get__(self, instance, ownerCls):
+        return self
+
+    def __eq__(self, *args, **kwargs):
+        expect = DefaultMethod(*self.args, **self.kwargs)
+        return getattr(expect, 'equal_to')(*args, **kwargs)
+
+    def __ne__(self, *args, **kwargs):
+        expect = DefaultMethod(*self.args, **self.kwargs)
+        return getattr(expect, 'not_equal_to')(*args, **kwargs)
+
+    def __lt__(self, *args, **kwargs):
+        expect = DefaultMethod(*self.args, **self.kwargs)
+        return getattr(expect, 'lower_than')(*args, **kwargs)
+
+    def __gt__(self, *args, **kwargs):
+        expect = DefaultMethod(*self.args, **self.kwargs)
+        return getattr(expect, 'greater_than')(*args, **kwargs)
+
+    def __le__(self, *args, **kwargs):
+        expect = DefaultMethod(*self.args, **self.kwargs)
+        return getattr(expect, 'lower_or_equal_than')(*args, **kwargs)
+
+    def __ge__(self, *args, **kwargs):
+        expect = DefaultMethod(*self.args, **self.kwargs)
+        return getattr(expect, 'greater_or_equal_than')(*args, **kwargs)
+

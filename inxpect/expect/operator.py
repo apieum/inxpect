@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 
+from . import pickle23
+
 class __Operator(object):
     def __init__(self, expected, getter):
         self.expected = expected
@@ -7,6 +9,12 @@ class __Operator(object):
 
     def __call__(self, *args, **kwargs):
         return self.is_true(self.getter(*args, **kwargs), self.expected)
+
+    def __eq__(self, other):
+        return repr(self) == repr(other)
+
+    def __repr__(self):
+        return pickle23.dumps(self)
 
     @classmethod
     def is_false(cls, given, expected):

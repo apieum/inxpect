@@ -1,10 +1,12 @@
 # -*- coding: utf8 -*-
-
+from . getters import FirstArg
 from . import pickle23
 
 class __Operator(object):
-    def __init__(self, expected, getter):
+    def __init__(self, expected, getter=None):
         self.expected = expected
+        if not callable(getter):
+            getter = FirstArg(getter)
         self.getter = getter
 
     def __call__(self, *args, **kwargs):

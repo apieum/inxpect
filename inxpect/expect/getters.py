@@ -16,6 +16,10 @@ class AsIs(_getter_):
     def __call__(self, *args, **kwargs):
         return self.value
 
+class FirstArg(_getter_):
+    def __call__(self, *args, **kwargs):
+        return args[0]
+
 class AtIndex(_getter_):
     def __init__(self, index, getter):
         self.index = index

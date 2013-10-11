@@ -4,7 +4,9 @@ from types import FunctionType, MethodType
 from . import expect
 from .expect.getters import AttrByName
 
-def expect_factory(template, depth=1):
+# @TODO: clean this code with a real factory object @#
+
+def expect_factory(template, depth=0):
     attrs = {}
     for member_name in dir(template):
         member = getattr(template, member_name)
@@ -21,7 +23,7 @@ def expect_factory(template, depth=1):
                 if depth > 0:
                     attrs[member_name] = expect_factory(member, depth-1)
                 else:
-                    attrs[member_name] = make_method(expect.DefaultMethod, member_name)
+                    attrs[member_name] = make_method(expect.SameMethod, member_name)
 
 
 
@@ -45,6 +47,6 @@ def use_DictMethod(value):
     return isinstance(value, dict)
 
 def use_ListMethod(value):
-    return isinstance(value, list)
+    return isinstance(value, (list, tuple))
 
 _is_property = lambda member: not isinstance(member, (MethodType, FunctionType, staticmethod, classmethod))

@@ -6,12 +6,12 @@ from inxpect import expect
 
 class Callable(int):
     kwargs = {'kwarg1': 'val1'}
-    args1 = ['arg1', 'arg2']
+    args1 = ('arg1', 'arg2')
     def __call__(self, *args, **kwargs):
         pass
 
 class Inspected(object):
-    attr1 = []
+    attr1 = ['val1', 'val2']
     attr2 = {}
     attr3 = None
     attr4 = Callable()
@@ -47,7 +47,7 @@ class InspectTest(TestCase):
     def test_built_object_properties_getter_is_AttrByName(self):
         expected = expect_factory(Inspected)
         test = Inspected()
-        assertion = expected.attr1.equal_to([])
+        assertion = expected.attr1.equal_to(['val1', 'val2'])
         self.assertTrue(assertion(test))
 
     def test_built_object_properties_are_DictMethod_when_object_ones_are_dict(self):
@@ -55,7 +55,7 @@ class InspectTest(TestCase):
         self.assertIsInstance(expected.attr2, expect.DictMethod)
 
     def test_built_object_properties_are_expect_factory_object_when_object_ones_are_objects(self):
-        expected = expect_factory(Inspected)
+        expected = expect_factory(Inspected, 1)
         self.assertIsInstance(expected.attr4.kwargs, expect.DictMethod)
 
     def test_built_object_properties_are_DefaultMethod_for_builtin(self):
@@ -68,8 +68,12 @@ class InspectTest(TestCase):
         self.assertIsInstance(expected.attr2Item, expect.DictItemMethod)
 
     def test_for_list_and_dict_ItemMethod_name_is_singular_of_property_if_end_by_s(self):
-        expected = expect_factory(Inspected)
+        expected = expect_factory(Inspected, 1)
         self.assertIsInstance(expected.attr4.kwarg, expect.DictItemMethod)
+
+    def test_tuple_are_treaten_as_list(self):
+        expected = expect_factory(Inspected, 1)
+        self.assertIsInstance(expected.attr4.args1, expect.ListMethod)
 
 
 class IsDefaultMethodTest(TestCase):

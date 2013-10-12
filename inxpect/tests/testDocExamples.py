@@ -56,8 +56,9 @@ class DocExamplesTest(TestCase):
 
         assert multiple_of_3_4_or_5(16)
 
-        # Testing and search (lambda pickled by jsonpickle):
-        assert multiple_of_4 == Equal(0, lambda num: num % 4)
+        # Testing and search (lambda is partially pickled):
+        assert (multiple_of_5 == Equal(0, lambda num: num % 5))
+        assert (multiple_of_5 == Equal(0, lambda num: num % 4)) is False
 
 
     def test_Inspect(self):

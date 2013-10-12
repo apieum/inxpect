@@ -1,11 +1,12 @@
 # -*- coding: utf8 -*-
 from . import TestCase
 from inxpect.expect import getters
+from inxpect.expect import pickle23
 
 class GettersTest(TestCase):
     def test_getters_repr_return_cPickle_string(self):
         expected = getters.AsIs('val1')
-        given = getters.pickle23.loads(repr(expected))
+        given = pickle23.loads(repr(expected))
 
         self.assertEqual(expected, given)
 

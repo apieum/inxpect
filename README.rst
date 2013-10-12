@@ -193,6 +193,8 @@ Expect Basics
 
   import inxpect
 
+  expect = inxpect.expect_factory(EventData)
+
   name_is_event1 = expect.name.equal_to('event1')  # can be done with ==
   result_is_not_None = expect.result != None
   is_event1 = name_is_event1 & result_is_not_None

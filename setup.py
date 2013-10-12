@@ -5,7 +5,7 @@ import os
 pkgName = 'inxpect'
 setup(
     name=pkgName,
-    version='0.3',
+    version='0.3.1',
     url='http://www.python.org/pypi/' + pkgName,
     author='Grégory Salvan',
     author_email='apieum@gmail.com',
@@ -26,6 +26,7 @@ setup(
         "jsonpickle",
     ],
     include_package_data=True,
-    packages=['inxpect'],
+    packages=['inxpect', 'inxpect.expect'],
+    package_dir={'inxpect': 'inxpect'},
     zip_safe=True,
 )

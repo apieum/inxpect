@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from .chain import AndChain
-from .getters import AsIs, ObjectLen
+from .getters import FirstArg, ObjectLen
 from . import operator
 
 
@@ -8,7 +8,7 @@ class DefaultProperty(object):
     returns = AndChain
     def __init__(self, _getter_=None):
         if not callable(_getter_):
-            _getter_ = AsIs(_getter_)
+            _getter_ = FirstArg(_getter_)
         self.get_finder = lambda find=_getter_: callable(find) and find or _getter_
 
     def _functor(self, operator, expected, _getter_=None):

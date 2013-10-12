@@ -1,12 +1,14 @@
 # -*- coding: utf8 -*-
-from . getters import FirstArg
+from . getters import FirstArg, AnonymousFunc, _getter_
 from . import pickle23
 
 class __Operator(object):
     def __init__(self, expected, getter=None):
         self.expected = expected
         if not callable(getter):
-            getter = FirstArg(getter)
+            getter = FirstArg()
+        elif not isinstance(getter, _getter_):
+            getter = AnonymousFunc(getter)
         self.getter = getter
 
     def __call__(self, *args, **kwargs):

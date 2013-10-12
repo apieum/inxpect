@@ -1,6 +1,15 @@
 # -*- coding: utf8 -*-
-from . getters import FirstArg, AnonymousFunc, _getter_
+from .getters import FirstArg, AnonymousFunc, _getter_
 from . import pickle23
+
+__all__ = [
+    'Equal', 'NotEqual', 'SameAs', 'NotSameAs',
+    'LowerThan', 'LowerOrEqualThan', 'GreaterThan', 'GreaterOrEqualThan',
+    'Contains', 'NotContains', 'ContainsAll', 'ContainsAny',
+    'ContainsItem', 'ContainsAllItem', 'ContainsAnyItem',
+    'ContainsValue', 'ContainsAllValue', 'ContainsAnyValue',
+    'InstanceOf', 'NotInstanceOf', 'TypeIs', 'TypeIsNot'
+]
 
 class __Operator(object):
     def __init__(self, expected, getter=None):

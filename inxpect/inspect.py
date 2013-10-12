@@ -28,7 +28,7 @@ def expect_factory(template, depth=0):
 
 
     name = getattr(template, '__name__', type(template).__name__)
-    return type('expect_%s'% name, (object, ), attrs)
+    return type('expect_%s'% name, (object, ), attrs)()
 
 def item_name(member_name):
     if member_name.endswith('s'):

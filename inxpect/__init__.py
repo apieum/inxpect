@@ -7,6 +7,8 @@ __all__ = [
     'List', 'ListItem',
     'Dict', 'DictItem'
 ]
-
+from .expect import getters
+from .expect import operator
 from .expect import *
 from .inspect import expect_factory
+

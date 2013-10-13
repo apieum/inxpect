@@ -8,10 +8,11 @@ __all__ = [
     'Contains', 'NotContains', 'ContainsAll', 'ContainsAny',
     'ContainsItem', 'ContainsAllItem', 'ContainsAnyItem',
     'ContainsValue', 'ContainsAllValue', 'ContainsAnyValue',
-    'InstanceOf', 'NotInstanceOf', 'TypeIs', 'TypeIsNot'
+    'InstanceOf', 'NotInstanceOf', 'TypeIs', 'TypeIsNot', 'Operator'
 ]
 
-class __Operator(object):
+class Operator(object):
+    deny = False
     def __init__(self, expected, getter=None):
         self.expected = expected
         if not callable(getter):
@@ -21,7 +22,8 @@ class __Operator(object):
         self.getter = getter
 
     def __call__(self, *args, **kwargs):
-        return self.is_true(self.getter(*args, **kwargs), self.expected)
+        call = self.deny and self.is_false or self.is_true
+        return call(self.getter(*args, **kwargs), self.expected)
 
     def __eq__(self, other):
         return repr(self) == repr(other)
@@ -33,77 +35,72 @@ class __Operator(object):
     def is_false(cls, given, expected):
         return not cls.is_true(given, expected)
 
-class Equal(__Operator):
+class NullOperator(Operator):
+    @classmethod
+    def is_true(cls, given, expected):
+        return True
+
+class Equal(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return given == expected
 
-class NotEqual(__Operator):
-    @classmethod
-    def is_true(cls, given, expected):
-        return Equal.is_false(given, expected)
+class NotEqual(Equal):
+    deny = True
 
-class SameAs(__Operator):
+class SameAs(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return given is expected
 
-class NotSameAs(__Operator):
-    @classmethod
-    def is_true(cls, given, expected):
-        return SameAs.is_false(given, expected)
+class NotSameAs(SameAs):
+    deny = True
 
-class LowerThan(__Operator):
+class LowerThan(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return given < expected
 
-class LowerOrEqualThan(__Operator):
+class LowerOrEqualThan(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return given <= expected
 
-class GreaterThan(__Operator):
+class GreaterThan(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return given > expected
 
-class GreaterOrEqualThan(__Operator):
+class GreaterOrEqualThan(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return given >= expected
 
-class TypeIs(__Operator):
+class TypeIs(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return type(given) is expected
 
-class TypeIsNot(__Operator):
-    @classmethod
-    def is_true(cls, given, expected):
-        return TypeIs.is_false(given, expected)
+class TypeIsNot(TypeIs):
+    deny = True
 
-class InstanceOf(__Operator):
+class InstanceOf(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return isinstance(given, expected)
 
-class NotInstanceOf(__Operator):
-    @classmethod
-    def is_true(cls, given, expected):
-        return InstanceOf.is_false(given, expected)
+class NotInstanceOf(InstanceOf):
+    deny = True
 
-class Contains(__Operator):
+class Contains(Operator):
     @classmethod
     def is_true(cls, given, expected):
         return expected in given
 
-class NotContains(__Operator):
-    @classmethod
-    def is_true(cls, given, expected):
-        return Contains.is_false(given, expected)
+class NotContains(Contains):
+    deny = True
 
-class ContainsAny(__Operator):
+class ContainsAny(Operator):
     @classmethod
     def is_true(cls, given, expected):
         for value in expected:
@@ -111,7 +108,7 @@ class ContainsAny(__Operator):
                 return True
         return False
 
-class ContainsAll(__Operator):
+class ContainsAll(Operator):
     @classmethod
     def is_true(cls, given, expected):
         for value in expected:
@@ -119,7 +116,7 @@ class ContainsAll(__Operator):
                 return False
         return True
 
-class ContainsItem(__Operator):
+class ContainsItem(Operator):
     @classmethod
     def is_true(cls, given, expected):
         name, value = expected
@@ -127,7 +124,7 @@ class ContainsItem(__Operator):
             return True
         return False
 
-class ContainsAnyItem(__Operator):
+class ContainsAnyItem(Operator):
     @classmethod
     def is_true(cls, given, expected):
         for item in expected.items():
@@ -135,7 +132,7 @@ class ContainsAnyItem(__Operator):
                 return True
         return False
 
-class ContainsAllItem(__Operator):
+class ContainsAllItem(Operator):
     @classmethod
     def is_true(cls, given, expected):
         for item in expected.items():
@@ -144,7 +141,7 @@ class ContainsAllItem(__Operator):
         return True
 
 
-class ContainsValue(__Operator):
+class ContainsValue(Operator):
     @classmethod
     def is_true(cls, given, expected):
         for value in given.values():
@@ -152,7 +149,7 @@ class ContainsValue(__Operator):
                 return True
         return False
 
-class ContainsAllValue(__Operator):
+class ContainsAllValue(Operator):
     @classmethod
     def is_true(cls, given, expected):
         for value in given.values():
@@ -160,7 +157,7 @@ class ContainsAllValue(__Operator):
                 return False
         return True
 
-class ContainsAnyValue(__Operator):
+class ContainsAnyValue(Operator):
     @classmethod
     def is_true(cls, given, expected):
         for value in given.values():

@@ -1,5 +1,6 @@
 #-*- coding: utf8 -*-
 from . import pickle23
+from jsonpickle import handlers
 
 
 class _getter_(object):
@@ -8,7 +9,6 @@ class _getter_(object):
 
     def __repr__(self):
         return pickle23.dumps(self)
-
 
 class AnonymousFunc(_getter_):
     def __init__(self, func):
@@ -31,8 +31,17 @@ class LambdaCode(AnonymousFunc):
         AnonymousFunc.__init__(types.LambdaType(code, globals()))
 
 
-from jsonpickle import handlers
-handlers.register(AnonymousFunc, handlers.SimpleReduceHandler)
+class GetterClosure(_getter_):
+    def __init__(self, getter, closure=None):
+        if not callable(closure):
+            closure = FirstArg()
+        if not isinstance(closure, _getter_):
+            closure = AnonymousFunc(closure)
+        self.closure = closure
+        self.getter = getter
+
+    def __call__(self, *args, **kwargs):
+        return self.closure(self.getter(*args, **kwargs))
 
 class AsIs(_getter_):
     def __init__(self, value):
@@ -45,22 +54,6 @@ class FirstArg(_getter_):
     def __call__(self, *args, **kwargs):
         return args[0]
 
-class AtIndex(_getter_):
-    def __init__(self, index, getter):
-        self.index = index
-        self.getter = getter
-
-    def __call__(self, *args, **kwargs):
-        return self.getter(*args, **kwargs)[self.index]
-
-
-class ObjectLen(_getter_):
-    def __init__(self, getter):
-        self.getter = getter
-
-    def __call__(self, *args, **kwargs):
-        return len(self.getter(*args, **kwargs))
-
 class AttrByName(_getter_):
     def __init__(self, attr_name):
         self.attr_name = attr_name
@@ -68,16 +61,5 @@ class AttrByName(_getter_):
     def __call__(self, instance, default=None):
         return getattr(instance, self.attr_name, default)
 
-class AttrTypeByName(AttrByName):
-    def __call__(self, instance, default=None):
-        return type(AttrByName.__call__(instance, default))
 
-class Arguments(_getter_):
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-
-    def __call__(self, *args, **kwargs):
-        args = list(self.args).extend(list(args))
-        kwargs = dict(self.kwargs).update(dict(kwargs))
-        return args, kwargs
+handlers.register(AnonymousFunc, handlers.SimpleReduceHandler)

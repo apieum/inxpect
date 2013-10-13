@@ -24,6 +24,7 @@ setup(
     ],
     install_requires=[
         "jsonpickle",
+        "yajl"
     ],
     include_package_data=True,
     packages=['inxpect', 'inxpect.expect'],

@@ -43,9 +43,10 @@ Features
 * Defines a set of chainable expectations within properties types
 * Provides a set of operators
 * Each operator support is_true and is_false methods
-* Can inject getters to operators and expectations
-* Getters, operators and operations are serializables and searchables
-* Operations results are tunables (returns booleans, raises exceptions, log...)
+* Can inject getters to operators and expectations constructors
+* Can inject getter closures to expectations
+* Getters, operators and expectations are serializables and searchables
+* Expectations results are tunables (returns booleans, raises exceptions, log...)
 * tested with python versions 2.7, 3.2 and 3.3
 
 ----------------------
@@ -226,8 +227,114 @@ Expect Basics
   assert log[0] == expected % 'event2'
 
 
+---------------
+Expect Closures
+---------------
 
-to be continued...
+As briefly seen, operators can take a getter argument.
+That's what is done by inspect that use AttrByName getter to return an attribute by its name.
+
+In addition to this, each assertion (equal_to...) can take a closure argument,
+wich is a function that take getter result as argument and return the value to test.
+
+Internally, this mecanism is used to provide 'at' and 'len' assertions,
+the example above illustrate how 'len' functions.
+
+
+.. code-block:: python
+
+  import inxpect
+
+  expect = inxpect.expect_factory(EventData)
+
+  name_len_is_5 = expect.name.equal_to(5, len)
+
+  event1 = EventData()
+  event2 = EventData(name='0123456789')
+
+  assert name_len_is_5(event1)
+  assert name_len_is_5(event2) is False
+
+  # the closure also encapsulate len for comparisons
+  assert name_len_is_5 == expect.name.equal_to(5, len)
+
+  ### Details:
+  # Never use this but it shows how len is encapsulated
+
+  # func is the internal varname, needed to compare bytecode
+  func = len
+  # Lambda permit to get bytecode from __code__ attibute
+  func_len = lambda *args, **kwargs: func(*args, **kwargs)
+  not_func_len = lambda *args, **kwargs: len(*args, **kwargs)
+
+  assert (name_len_is_5 == expect.name.equal_to(5, func_len))
+  # assert it compares bytecode
+  assert (name_len_is_5 == expect.name.equal_to(5, not_func_len)) is False
+
+
+
+--------------
+Expect Should
+--------------
+
+In case default operators are not sufficient, you can define yours and use them easily with should.
+An operator is a simple class that extends Operator (located in inxpect.expect.operator)
+which need the class method "is_true(cls, given, expected)" to returns a boolean.
+
+
+
+.. code-block:: python
+
+  from inxpect.expect import Expect
+  from inxpect.expect.operator import Operator
+
+  class MultipleOf5(Operator):
+      @classmethod
+      def is_true(cls, given, expected):
+          return given % 5 == expected
+
+
+  expect = Expect()
+  expected = 0
+  multiple_of_5 = expect.should(MultipleOf5, expected)
+
+  assert multiple_of_5(10)
+  assert multiple_of_5(11) is False
+
+  # Should provides also the negation:
+  not_multiple_of_5 = expect.should_not(MultipleOf5, expected)
+
+  assert not_multiple_of_5(11)
+
+
+  # Should can take closure:
+  divide_by_2 = lambda given: given / 2
+  multiple_of_2_and_5 = expect.should(MultipleOf5, expected, divide_by_2)
+
+  assert multiple_of_2_and_5(10)
+  assert multiple_of_2_and_5(15) is False
+
+  # Should syntactic sugar:
+  is_10 = expect.should == 10
+  assert is_10(10)
+  assert is_10(11) is False
+  # like expect:
+  is_10 = expect == 10
+  assert is_10(10)
+  assert is_10(11) is False
+
+  # at the difference that should can take a closure:
+  mod_2 = lambda num: num % 2
+  multiple_of_2 = expect.should == (0, mod_2)
+  assert multiple_of_2(10)
+  assert multiple_of_2(11) is False
+
+  # unlike expect:
+  weird_example = expect == (0, mod_2)
+  assert weird_example(10) is False
+  assert weird_example((0, mod_2))
+
+
 
 
 ===========
@@ -241,6 +348,8 @@ Launch test::
   git clone git@github.com:apieum/inxpect.git
   cd inxpect
   nosetests --with-spec --spec-color
+
+
 
 
 .. image:: https://secure.travis-ci.org/apieum/inxpect.png?branch=master

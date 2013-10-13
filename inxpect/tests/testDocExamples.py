@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 from . import TestCase
-import inxpect
 
 class Subject(object):
     args = tuple()
@@ -62,6 +61,7 @@ class DocExamplesTest(TestCase):
 
 
     def test_Inspect(self):
+        import inxpect
 
         expect = inxpect.expect_factory(EventData)
         assert hasattr(expect, 'result')
@@ -71,6 +71,7 @@ class DocExamplesTest(TestCase):
         assert hasattr(expect.subject, 'args')
 
     def test_Expect_basics(self):
+        import inxpect
 
         expect = inxpect.expect_factory(EventData)
 
@@ -103,3 +104,85 @@ class DocExamplesTest(TestCase):
         assert is_event1(event2) is False
 
         assert log[0] == expected % 'event2'
+
+
+    def test_Expect_closures(self):
+        import inxpect
+
+        expect = inxpect.expect_factory(EventData)
+
+        name_len_is_5 = expect.name.equal_to(5, len)
+
+        event1 = EventData()
+        event2 = EventData(name='0123456789')
+
+        assert name_len_is_5(event1)
+        assert name_len_is_5(event2) is False
+
+        # the closure also encapsulate len for comparisons
+        assert name_len_is_5 == expect.name.equal_to(5, len)
+
+        ### Details:
+        # Never use this but it shows how len is encapsulated
+
+        # func is the internal varname, needed to compare bytecode
+        func = len
+        # Lambda permit to get bytecode from __code__ attibute
+        func_len = lambda *args, **kwargs: func(*args, **kwargs)
+        not_func_len = lambda *args, **kwargs: len(*args, **kwargs)
+
+        assert (name_len_is_5 == expect.name.equal_to(5, func_len))
+        # assert it compares bytecode
+        assert (name_len_is_5 == expect.name.equal_to(5, not_func_len)) is False
+
+
+    def test_Expect_should(self):
+        from inxpect.expect import Expect
+        from inxpect.expect.operator import Operator
+
+        class MultipleOf5(Operator):
+            @classmethod
+            def is_true(cls, given, expected):
+                return given % 5 == expected
+
+
+        expect = Expect()
+        expected = 0
+        multiple_of_5 = expect.should(MultipleOf5, expected)
+
+        assert multiple_of_5(10)
+        assert multiple_of_5(11) is False
+
+        # Should provides also the negation:
+        not_multiple_of_5 = expect.should_not(MultipleOf5, expected)
+
+        assert not_multiple_of_5(11)
+
+
+        # Should can take closure:
+        divide_by_2 = lambda given: given / 2
+        multiple_of_2_and_5 = expect.should(MultipleOf5, expected, divide_by_2)
+
+        assert multiple_of_2_and_5(10)
+        assert multiple_of_2_and_5(15) is False
+
+        # Should syntactic sugar:
+        is_10 = expect.should == 10
+        assert is_10(10)
+        assert is_10(11) is False
+        # like expect:
+        is_10 = expect == 10
+        assert is_10(10)
+        assert is_10(11) is False
+
+        # at the difference that should can take a closure:
+        mod_2 = lambda num: num % 2
+        multiple_of_2 = expect.should == (0, mod_2)
+        assert multiple_of_2(10)
+        assert multiple_of_2(11) is False
+
+        # unlike expect:
+        weird_example = expect == (0, mod_2)
+        assert weird_example(10) is False
+        assert weird_example((0, mod_2))
+

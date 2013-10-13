@@ -19,13 +19,13 @@ class DefaultMethodFactory(object):
 
         return expect(*args, **kwargs)
 
-    def at(self, key, _getter_=None):
+    def at(self, key):
         if isinstance(key, int):
             expect = ListMethod(*self.args, **self.kwargs)
         else:
             expect = DictMethod(*self.args, **self.kwargs)
 
-        return expect.at(key, _getter_)
+        return expect.at(key)
 
     def __getattr__(self, name):
         if name in dir(DefaultMethod):

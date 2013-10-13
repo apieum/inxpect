@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 from .property import DefaultProperty
-from .getters import AtIndex
-from . import operator
+from .operator import *
 
 
 
@@ -9,37 +8,37 @@ class DictMethod(DefaultProperty):
     def __call__(self, **expected_items):
         return self.has_items(expected_items)
 
-    def has_key(self, expected, _getter_=None):
-        return self._functor(operator.Contains, expected, _getter_)
+    def has_key(self, expected, closure=None):
+        return self.should(Contains, expected, closure)
 
-    def has_keys(self, expected, _getter_=None):
-        return self._functor(operator.ContainsAll, expected, _getter_)
+    def has_keys(self, expected, closure=None):
+        return self.should(ContainsAll, expected, closure)
 
-    def has_any_key(self, expected, _getter_=None):
-        return self._functor(operator.ContainsAny, expected, _getter_)
+    def has_any_key(self, expected, closure=None):
+        return self.should(ContainsAny, expected, closure)
 
-    def has_item(self, name, value, _getter_=None):
-        return self._functor(operator.ContainsItem, (name, value), _getter_)
+    def has_item(self, name, value, closure=None):
+        return self.should(ContainsItem, (name, value), closure)
 
-    def has_items(self, expected, _getter_=None):
-        return self._functor(operator.ContainsAllItem, expected, _getter_)
+    def has_items(self, expected, closure=None):
+        return self.should(ContainsAllItem, expected, closure)
 
-    def has_any_item(self, expected, _getter_=None):
-        return self._functor(operator.ContainsAnyItem, expected, _getter_)
+    def has_any_item(self, expected, closure=None):
+        return self.should(ContainsAnyItem, expected, closure)
 
-    def has_value(self, expected, _getter_=None):
-        return self._functor(operator.ContainsValue, expected, _getter_)
+    def has_value(self, expected, closure=None):
+        return self.should(ContainsValue, expected, closure)
 
-    def has_values(self, expected, _getter_=None):
-        return self._functor(operator.ContainsAllValue, expected, _getter_)
+    def has_values(self, expected, closure=None):
+        return self.should(ContainsAllValue, expected, closure)
 
-    def has_any_value(self, expected, _getter_=None):
-        return self._functor(operator.ContainsAnyValue, expected, _getter_)
+    def has_any_value(self, expected, closure=None):
+        return self.should(ContainsAnyValue, expected, closure)
 
-    def at(self, key, _getter_=None):
+    def at(self, key):
         from .factory import DefaultMethodFactory
-        _getter_ = self.get_finder(_getter_)
-        return DefaultMethodFactory(_getter_=AtIndex(key, _getter_))
+        closure = self.should.closure(lambda _dict: _dict.get(key))
+        return DefaultMethodFactory(getter=closure)
 
 
 class DictItemMethod(DictMethod):

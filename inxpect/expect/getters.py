@@ -12,7 +12,10 @@ class _getter_(object):
 
 class AnonymousFunc(_getter_):
     def __init__(self, func):
-        self.func = func
+        if not hasattr(func, '__code__'):
+            self.func = lambda *args, **kwargs: func(*args, **kwargs)
+        else:
+            self.func = func
 
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)

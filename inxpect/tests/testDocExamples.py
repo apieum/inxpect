@@ -55,9 +55,18 @@ class DocExamplesTest(TestCase):
 
         assert multiple_of_3_4_or_5(16)
 
+        # As multiple_of_3_or_5 is Or chain multiple_of_4 is just appended
+        assert multiple_of_3_4_or_5 is multiple_of_3_or_5
+
+        # With And chain a new And chain is returned:
+        assert (multiple_of_3_or_5 is multiple_of_3_or_5 & multiple_of_4) is False
+
         # Testing and search (lambda is partially pickled):
         assert (multiple_of_5 == Equal(0, lambda num: num % 5))
+        # Comparison is made on bytecode
         assert (multiple_of_5 == Equal(0, lambda num: num % 4)) is False
+        # Comparison is made on arguments (and their name)
+        assert (multiple_of_5 == Equal(0, lambda num, *args: num % 5)) is False
 
 
     def test_Inspect(self):

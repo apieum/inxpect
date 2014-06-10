@@ -8,6 +8,7 @@ python:
 install:
     - "pip install -r requirements.txt --use-mirrors"
     - "pip install -r dev-requirements.txt --use-mirrors"
+    - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install yajl; fi
     - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install coverage coveralls; fi
     - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install restructuredtext_lint Pygments; fi
 # command to run tests

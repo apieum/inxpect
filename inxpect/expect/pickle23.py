@@ -1,6 +1,9 @@
 #-*- coding: utf8 -*-
 import jsonpickle
-jsonpickle.set_preferred_backend('yajl')
+try:
+    jsonpickle.set_preferred_backend('yajl')
+except AssertionError:
+    pass
 
 
 def dumps(data):

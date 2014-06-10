@@ -13,7 +13,7 @@ install:
 # command to run tests
 script:
     - export COVERALLS_REPO_TOKEN=Z1QYdIN520q94SSs2ALJh85m9XSsttFEd
-    - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then nosetests --with-coverage --cover-package=eventize; fi
+    - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then nosetests --with-coverage --cover-package=inxpect; fi
     - if [[ $TRAVIS_PYTHON_VERSION != '2.7' ]]; then nosetests; fi
     - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then rst-lint README.rst; fi
 
